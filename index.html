@@ -156,42 +156,6 @@
             color: #0d95e8;
         }
 
-        /* Login form styles */
-        .login-form {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-top: 100px;
-        }
-
-        .login-form input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            font-size: 16px;
-            border: 1px solid #ccd6dd;
-            border-radius: 8px;
-        }
-
-        .login-form button {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            color: #fff;
-            background: #1DA1F2;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .login-form button:hover {
-            background: #0d95e8;
-        }
-
         /* Profile settings */
         .profile-settings {
             margin-top: 20px;
@@ -225,11 +189,11 @@
     <!-- Navigation Bar -->
     <nav style="display: none;" id="navbar">
         <ul>
-            <li><a href="#home">Home</a></li>
+            <li><a href="#" onclick="reloadPage()">Home</a></li>
             <li><a href="#explore">Explore</a></li>
             <li><a href="#notifications">Notifications</a></li>
             <li><a href="#messages">Messages</a></li>
-            <li><a href="#profile">Profile</a></li>
+            <li><a href="#profile" onclick="loadProfile()">Profile</a></li>
             <li><a href="#settings">Settings</a></li>
         </ul>
     </nav>
@@ -262,46 +226,66 @@
 
     <script>
         let tweets = [];
+        let user = { username: "", profilePic: "profile-pic.jpg" };
 
-        // Check if the user is logged in by checking cookies
+        // Load data from localStorage on page load
+        window.onload = function () {
+            loadUserData();
+            loadTweets();
+            checkLogin();
+        }
+
+        // Check if the user is logged in
         function checkLogin() {
-            const userData = getCookie('UserData');
+            const userData = localStorage.getItem('UserData');
             if (userData) {
-                const user = JSON.parse(userData);
+                user = JSON.parse(userData);
                 document.getElementById('navbar').style.display = 'flex';
                 document.getElementById('sidebar').style.display = 'block';
                 document.getElementById('login-form').style.display = 'none';
                 document.getElementById('tweet-box').style.display = 'block';  // Show tweet box after login
                 document.getElementById('username-display').textContent = user.username;
                 document.getElementById('username-handle').textContent = user.username;
+                document.getElementById('profile-pic').src = user.profilePic;
             } else {
                 document.getElementById('login-form').style.display = 'block';
             }
-
             updateTrendingTopics();
         }
 
-        // Get cookie value
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
+        // Set the user's data into localStorage
+        function saveUserData() {
+            localStorage.setItem('UserData', JSON.stringify(user));
         }
 
-        // Set cookie value
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = `expires=${d.toUTCString()}`;
-            document.cookie = `${name}=${value};${expires};path=/`;
+        // Set the tweets into localStorage
+        function saveTweets() {
+            localStorage.setItem('Tweets', JSON.stringify(tweets));
+        }
+
+        // Load the user's data from localStorage
+        function loadUserData() {
+            const storedUserData = localStorage.getItem('UserData');
+            if (storedUserData) {
+                user = JSON.parse(storedUserData);
+            }
+        }
+
+        // Load tweets from localStorage
+        function loadTweets() {
+            const storedTweets = localStorage.getItem('Tweets');
+            if (storedTweets) {
+                tweets = JSON.parse(storedTweets);
+                displayTweets(tweets);
+            }
         }
 
         // Login function
         function login() {
             const username = document.getElementById('username').value;
             if (username) {
-                const userData = { username };
-                setCookie('UserData', JSON.stringify(userData), 7); // Store cookie for 7 days
+                user.username = username;
+                saveUserData();
                 checkLogin();
             } else {
                 alert('Please enter a username.');
@@ -311,24 +295,26 @@
         // Update Profile Picture
         function updateProfilePic(event) {
             const reader = new FileReader();
-            reader.onload = function() {
-                document.getElementById('profile-pic').src = reader.result;
+            reader.onload = function () {
+                user.profilePic = reader.result;
+                document.getElementById('profile-pic').src = user.profilePic;
+                saveUserData();
             }
             reader.readAsDataURL(event.target.files[0]);
         }
 
         // Tweet function
-        document.getElementById('tweet-button').addEventListener('click', function() {
+        document.getElementById('tweet-button').addEventListener('click', function () {
             const tweetInput = document.getElementById('tweet-input');
-            const tweetsContainer = document.getElementById('tweets-container');
-
             const newTweet = {
+                username: user.username,
+                profilePic: user.profilePic,
                 content: tweetInput.value,
-                hashtags: extractHashtags(tweetInput.value),
+                likes: 0,
+                replies: []
             };
-
             tweets.push(newTweet);
-            updateTrendingTopics(); // Update trending topics after each tweet
+            saveTweets();
             displayTweets(tweets);
             tweetInput.value = '';
         });
@@ -338,18 +324,20 @@
             const tweetsContainer = document.getElementById('tweets-container');
             tweetsContainer.innerHTML = ''; // Clear existing tweets
 
-            tweets.forEach(tweet => {
+            tweets.forEach((tweet, index) => {
                 const tweetElement = document.createElement('div');
                 tweetElement.className = 'tweet';
                 tweetElement.innerHTML = `
-                    <img src="user-pic.jpg" alt="User Picture">
+                    <img src="${tweet.profilePic}" alt="User Picture">
                     <div class="tweet-content">
-                        <h3>@user</h3>
+                        <h3>@${tweet.username}</h3>
                         <p>${tweet.content}</p>
                         <div class="tweet-actions">
-                            <button>Like</button>
-                            <button>Retweet</button>
-                            <button>Reply</button>
+                            <button onclick="likeTweet(${index})">Like (${tweet.likes})</button>
+                            <button onclick="replyTweet(${index})">Reply</button>
+                        </div>
+                        <div class="replies">
+                            ${tweet.replies.map(reply => `<p><strong>@${reply.username}</strong>: ${reply.content}</p>`).join('')}
                         </div>
                     </div>
                 `;
@@ -357,15 +345,30 @@
             });
         }
 
-        // Extract hashtags from a tweet
-        function extractHashtags(tweetContent) {
-            const hashtagRegex = /#\w+/g;
-            return tweetContent.match(hashtagRegex) || [];
+        // Like tweet function
+        function likeTweet(index) {
+            tweets[index].likes++;
+            saveTweets();
+            displayTweets(tweets);
         }
 
-        // Update trending topics based on tweets
+        // Reply tweet function
+        function replyTweet(index) {
+            const replyContent = prompt("Enter your reply:");
+            if (replyContent) {
+                const reply = {
+                    username: user.username,
+                    content: replyContent
+                };
+                tweets[index].replies.push(reply);
+                saveTweets();
+                displayTweets(tweets);
+            }
+        }
+
+        // Update trending topics
         function updateTrendingTopics() {
-            const hashtags = tweets.flatMap(tweet => tweet.hashtags);
+            const hashtags = tweets.flatMap(tweet => extractHashtags(tweet.content));
             const trending = getTrendingHashtags(hashtags);
 
             const trendsList = document.getElementById('trends-list');
@@ -385,22 +388,33 @@
             }
         }
 
-        // Get top trending hashtags
-        function getTrendingHashtags(hashtags) {
-            const count = {};
-            hashtags.forEach(hashtag => {
-                count[hashtag] = (count[hashtag] || 0) + 1;
-            });
-
-            const sortedHashtags = Object.entries(count)
-                .sort((a, b) => b[1] - a[1])
-                .map(entry => entry[0]);
-
-            return sortedHashtags.slice(0, 3); // Show top 3 trending hashtags
+        // Extract hashtags from a tweet content
+        function extractHashtags(content) {
+            const regex = /#(\w+)/g;
+            let match;
+            const hashtags = [];
+            while ((match = regex.exec(content)) !== null) {
+                hashtags.push(match[0]);
+            }
+            return hashtags;
         }
 
-        // Check login status when the page loads
-        window.onload = checkLogin;
+        // Get the top 5 trending hashtags
+        function getTrendingHashtags(hashtags) {
+            const hashtagCount = {};
+            hashtags.forEach(tag => {
+                hashtagCount[tag] = (hashtagCount[tag] || 0) + 1;
+            });
+
+            return Object.keys(hashtagCount)
+                .sort((a, b) => hashtagCount[b] - hashtagCount[a])
+                .slice(0, 5);
+        }
+
+        // Reload the page
+        function reloadPage() {
+            location.reload();
+        }
     </script>
 </body>
 </html>
