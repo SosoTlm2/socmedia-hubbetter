@@ -1,57 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>404 Not Found</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
 
-        .container {
-            text-align: center;
-            max-width: 600px;
-        }
+      .container {
+        text-align: center;
+        max-width: 600px;
+      }
 
-        h1 {
-            font-size: 64px;
-            color: #ff4757;
-            margin-bottom: 20px;
-        }
+      h1 {
+        font-size: 64px;
+        color: #ff4757;
+        margin-bottom: 20px;
+      }
 
-        p {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 30px;
-        }
+      p {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 30px;
+      }
 
-        a {
-            background-color: #1da1f2;
-            color: white;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
+      a {
+        background-color: #1da1f2;
+        color: white;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
 
-        a:hover {
-            background-color: #0d95e8;
-        }
+      a:hover {
+        background-color: #0d95e8;
+      }
     </style>
-</head>
-<body>
+    <script>
+      // Language translations
+      const translations = {
+        en: {
+          title: 'You typed something random.',
+          subtitle: 'Admit it, you typed something random. (you found an easter egg :p)',
+          button: 'Go back to Home',
+        },
+        fr: {
+          title: 'Vous avez tapé quelque chose au hasard.',
+          subtitle: 'Avouez-le, vous avez tapé quelque chose au hasard. (vous avez trouvé un easter egg :p)',
+          button: "Retourner à l'accueil",
+        },
+      };
+
+      // Detect browser language
+      function detectLanguage() {
+        const userLang = navigator.language || navigator.userLanguage;
+        return userLang.startsWith('fr') ? 'fr' : 'en';
+      }
+
+      // Update page content
+      function translatePage(lang) {
+        document.getElementById('title').textContent = translations[lang].title;
+        document.getElementById('subtitle').textContent = translations[lang].subtitle;
+        document.getElementById('button').textContent = translations[lang].button;
+      }
+
+      // Apply translations on page load
+      window.onload = () => {
+        const lang = detectLanguage();
+        translatePage(lang);
+      };
+    </script>
+  </head>
+  <body>
     <div class="container">
-        <h1>You typed something random.</h1>
-        <p>Admit it, you typed something random. (you found an easter egg :p)</p>
-        <a href="/">Go back to Home</a>
+      <h1 id="title">You typed something random.</h1>
+      <p id="subtitle">Admit it, you typed something random. (you found an easter egg :p)</p>
+      <a id="button" href="/">Go back to Home</a>
     </div>
-</body>
+  </body>
 </html>
