@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SocMediaHub - Twitter Style</title>
+    <title>SocMediaHub - Multiplayer Tweets</title>
     <style>
-        /* Modernized global styles */
-        body {
+         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             background-color: #f5f8fa;
@@ -179,45 +178,20 @@
     </style>
 </head>
 <body>
-    <!-- Login Form -->
     <div id="login-form" class="login-form">
         <h2>Login</h2>
         <input type="text" id="username" placeholder="Enter your username">
         <button onclick="login()">Login</button>
     </div>
 
-    <!-- Navigation Bar -->
     <nav style="display: none;" id="navbar">
         <ul>
             <li><a href="#" onclick="reloadPage()">Home</a></li>
-            <li><a href="#explore">Explore</a></li>
-            <li><a href="#notifications">Notifications</a></li>
-            <li><a href="#messages">Messages</a></li>
-            <li><a href="#profile" onclick="loadProfile()">Profile</a></li>
-            <li><a href="#settings">Settings</a></li>
         </ul>
     </nav>
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar" style="display: none;">
-        <div class="profile">
-            <img id="profile-pic" src="profile-pic.jpg" alt="Profile Picture">
-            <h2 id="username-display">Username</h2>
-            <p>@<span id="username-handle">username</span></p>
-            <!-- Profile Settings for Picture Upload -->
-            <div class="profile-settings">
-                <label for="profile-pic-upload">Change Profile Picture:</label>
-                <input type="file" id="profile-pic-upload" accept="image/*" onchange="updateProfilePic(event)">
-            </div>
-        </div>
-        <ul class="trends" id="trends-list">
-            <!-- Trending topics will be displayed here -->
-        </ul>
-    </aside>
-
-    <!-- Main Content -->
     <main>
-        <div class="tweet-box" id="tweet-box" style="display: none;">
+        <div id="tweet-box" style="display: none;">
             <textarea id="tweet-input" placeholder="What's happening?"></textarea>
             <button id="tweet-button">Tweet</button>
         </div>
@@ -225,196 +199,92 @@
     </main>
 
     <script>
-        let tweets = [];
-        let user = { username: "", profilePic: "profile-pic.jpg" };
+        let user = {};
+        const cookieName = 'socMediaHubTweets';
 
-        // Load data from localStorage on page load
-        window.onload = function () {
-            loadUserData();
-            loadTweets();
-            checkLogin();
+        // Load cookies and sync tweets
+        function loadTweetsFromCookies() {
+            const cookie = getCookie(cookieName);
+            return cookie ? JSON.parse(decodeURIComponent(cookie)) : [];
         }
 
-        // Check if the user is logged in
-        function checkLogin() {
-            const userData = localStorage.getItem('UserData');
-            if (userData) {
-                user = JSON.parse(userData);
-                document.getElementById('navbar').style.display = 'flex';
-                document.getElementById('sidebar').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('tweet-box').style.display = 'block';  // Show tweet box after login
-                document.getElementById('username-display').textContent = user.username;
-                document.getElementById('username-handle').textContent = user.username;
-                document.getElementById('profile-pic').src = user.profilePic;
-            } else {
-                document.getElementById('login-form').style.display = 'block';
+        function saveTweetsToCookies(tweets) {
+            const maxAge = 60 * 60 * 24 * 7; // 7-day cookie expiry
+            document.cookie = `${cookieName}=${encodeURIComponent(JSON.stringify(tweets))};path=/;max-age=${maxAge}`;
+        }
+
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    return cookie.substring(name.length + 1);
+                }
             }
-            updateTrendingTopics();
+            return '';
         }
 
-        // Set the user's data into localStorage
-        function saveUserData() {
-            localStorage.setItem('UserData', JSON.stringify(user));
-        }
-
-        // Set the tweets into localStorage
-        function saveTweets() {
-            localStorage.setItem('Tweets', JSON.stringify(tweets));
-        }
-
-        // Load the user's data from localStorage
-        function loadUserData() {
-            const storedUserData = localStorage.getItem('UserData');
-            if (storedUserData) {
-                user = JSON.parse(storedUserData);
-            }
-        }
-
-        // Load tweets from localStorage
-        function loadTweets() {
-            const storedTweets = localStorage.getItem('Tweets');
-            if (storedTweets) {
-                tweets = JSON.parse(storedTweets);
-                displayTweets(tweets);
-            }
-        }
-
-        // Login function
-        function login() {
-            const username = document.getElementById('username').value;
-            if (username) {
-                user.username = username;
-                saveUserData();
-                checkLogin();
-            } else {
-                alert('Please enter a username.');
-            }
-        }
-
-        // Update Profile Picture
-        function updateProfilePic(event) {
-            const reader = new FileReader();
-            reader.onload = function () {
-                user.profilePic = reader.result;
-                document.getElementById('profile-pic').src = user.profilePic;
-                saveUserData();
-            }
-            reader.readAsDataURL(event.target.files[0]);
-        }
-
-        // Tweet function
-        document.getElementById('tweet-button').addEventListener('click', function () {
-            const tweetInput = document.getElementById('tweet-input');
-            const newTweet = {
-                username: user.username,
-                profilePic: user.profilePic,
-                content: tweetInput.value,
-                likes: 0,
-                replies: []
-            };
-            tweets.push(newTweet);
-            saveTweets();
-            displayTweets(tweets);
-            tweetInput.value = '';
-        });
-
-        // Display all tweets
+        // Display tweets from cookies
         function displayTweets(tweets) {
             const tweetsContainer = document.getElementById('tweets-container');
-            tweetsContainer.innerHTML = ''; // Clear existing tweets
+            tweetsContainer.innerHTML = '';
 
-            tweets.forEach((tweet, index) => {
+            tweets.forEach(tweet => {
                 const tweetElement = document.createElement('div');
                 tweetElement.className = 'tweet';
                 tweetElement.innerHTML = `
-                    <img src="${tweet.profilePic}" alt="User Picture">
-                    <div class="tweet-content">
-                        <h3>@${tweet.username}</h3>
-                        <p>${tweet.content}</p>
-                        <div class="tweet-actions">
-                            <button onclick="likeTweet(${index})">Like (${tweet.likes})</button>
-                            <button onclick="replyTweet(${index})">Reply</button>
-                        </div>
-                        <div class="replies">
-                            ${tweet.replies.map(reply => `<p><strong>@${reply.username}</strong>: ${reply.content}</p>`).join('')}
-                        </div>
-                    </div>
+                    <h3>@${tweet.username}</h3>
+                    <p>${tweet.content}</p>
                 `;
                 tweetsContainer.appendChild(tweetElement);
             });
         }
 
-        // Like tweet function
-        function likeTweet(index) {
-            tweets[index].likes++;
-            saveTweets();
+        // Add tweet
+        document.getElementById('tweet-button').addEventListener('click', function () {
+            const tweetInput = document.getElementById('tweet-input');
+            const newTweet = {
+                username: user.username,
+                content: tweetInput.value
+            };
+            const tweets = loadTweetsFromCookies();
+            tweets.push(newTweet);
+            saveTweetsToCookies(tweets);
             displayTweets(tweets);
-        }
+            tweetInput.value = '';
+        });
 
-        // Reply tweet function
-        function replyTweet(index) {
-            const replyContent = prompt("Enter your reply:");
-            if (replyContent) {
-                const reply = {
-                    username: user.username,
-                    content: replyContent
-                };
-                tweets[index].replies.push(reply);
-                saveTweets();
-                displayTweets(tweets);
-            }
-        }
-
-        // Update trending topics
-        function updateTrendingTopics() {
-            const hashtags = tweets.flatMap(tweet => extractHashtags(tweet.content));
-            const trending = getTrendingHashtags(hashtags);
-
-            const trendsList = document.getElementById('trends-list');
-            trendsList.innerHTML = ''; // Clear existing trends
-
-            if (trending.length === 0) {
-                const noTrends = document.createElement('li');
-                noTrends.classList.add('no-trends');
-                noTrends.textContent = 'No current trending topics today';
-                trendsList.appendChild(noTrends);
+        // Login
+        function login() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                user.username = username;
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('navbar').style.display = 'block';
+                document.getElementById('tweet-box').style.display = 'block';
+                displayTweets(loadTweetsFromCookies());
             } else {
-                trending.forEach(trend => {
-                    const trendItem = document.createElement('li');
-                    trendItem.textContent = trend;
-                    trendsList.appendChild(trendItem);
-                });
+                alert('Please enter a username.');
             }
         }
 
-        // Extract hashtags from a tweet content
-        function extractHashtags(content) {
-            const regex = /#(\w+)/g;
-            let match;
-            const hashtags = [];
-            while ((match = regex.exec(content)) !== null) {
-                hashtags.push(match[0]);
+        // Initialize
+        window.onload = function () {
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) {
+                user = JSON.parse(storedUser);
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('navbar').style.display = 'block';
+                document.getElementById('tweet-box').style.display = 'block';
+                displayTweets(loadTweetsFromCookies());
             }
-            return hashtags;
-        }
+        };
 
-        // Get the top 5 trending hashtags
-        function getTrendingHashtags(hashtags) {
-            const hashtagCount = {};
-            hashtags.forEach(tag => {
-                hashtagCount[tag] = (hashtagCount[tag] || 0) + 1;
-            });
-
-            return Object.keys(hashtagCount)
-                .sort((a, b) => hashtagCount[b] - hashtagCount[a])
-                .slice(0, 5);
-        }
-
-        // Reload the page
-        function reloadPage() {
-            location.reload();
-        }
+        window.onbeforeunload = function () {
+            if (user.username) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+            }
+        };
     </script>
 </body>
 </html>
