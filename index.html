@@ -191,6 +191,27 @@
         .login-form button:hover {
             background: #0d95e8;
         }
+
+        /* Profile settings */
+        .profile-settings {
+            margin-top: 20px;
+        }
+
+        .profile-settings label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .profile-settings input[type="file"] {
+            margin-top: 10px;
+        }
+
+        /* No trends message */
+        .no-trends {
+            color: #999;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -219,11 +240,14 @@
             <img id="profile-pic" src="profile-pic.jpg" alt="Profile Picture">
             <h2 id="username-display">Username</h2>
             <p>@<span id="username-handle">username</span></p>
+            <!-- Profile Settings for Picture Upload -->
+            <div class="profile-settings">
+                <label for="profile-pic-upload">Change Profile Picture:</label>
+                <input type="file" id="profile-pic-upload" accept="image/*" onchange="updateProfilePic(event)">
+            </div>
         </div>
-        <ul class="trends">
-            <li>#TrendingTopic1</li>
-            <li>#TrendingTopic2</li>
-            <li>#TrendingTopic3</li>
+        <ul class="trends" id="trends-list">
+            <!-- Trending topics will be displayed here -->
         </ul>
     </aside>
 
@@ -237,6 +261,8 @@
     </main>
 
     <script>
+        let tweets = [];
+
         // Check if the user is logged in by checking cookies
         function checkLogin() {
             const userData = getCookie('UserData');
@@ -251,6 +277,8 @@
             } else {
                 document.getElementById('login-form').style.display = 'block';
             }
+
+            updateTrendingTopics();
         }
 
         // Get cookie value
@@ -280,30 +308,96 @@
             }
         }
 
+        // Update Profile Picture
+        function updateProfilePic(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                document.getElementById('profile-pic').src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
         // Tweet function
         document.getElementById('tweet-button').addEventListener('click', function() {
             const tweetInput = document.getElementById('tweet-input');
             const tweetsContainer = document.getElementById('tweets-container');
 
-            const newTweet = document.createElement('div');
-            newTweet.className = 'tweet';
+            const newTweet = {
+                content: tweetInput.value,
+                hashtags: extractHashtags(tweetInput.value),
+            };
 
-            newTweet.innerHTML = `
-                <img src="user-pic.jpg" alt="User Picture">
-                <div class="tweet-content">
-                    <h3>@user</h3>
-                    <p>${tweetInput.value}</p>
-                    <div class="tweet-actions">
-                        <button>Like</button>
-                        <button>Retweet</button>
-                        <button>Reply</button>
-                    </div>
-                </div>
-            `;
-
-            tweetsContainer.prepend(newTweet);
+            tweets.push(newTweet);
+            updateTrendingTopics(); // Update trending topics after each tweet
+            displayTweets(tweets);
             tweetInput.value = '';
         });
+
+        // Display all tweets
+        function displayTweets(tweets) {
+            const tweetsContainer = document.getElementById('tweets-container');
+            tweetsContainer.innerHTML = ''; // Clear existing tweets
+
+            tweets.forEach(tweet => {
+                const tweetElement = document.createElement('div');
+                tweetElement.className = 'tweet';
+                tweetElement.innerHTML = `
+                    <img src="user-pic.jpg" alt="User Picture">
+                    <div class="tweet-content">
+                        <h3>@user</h3>
+                        <p>${tweet.content}</p>
+                        <div class="tweet-actions">
+                            <button>Like</button>
+                            <button>Retweet</button>
+                            <button>Reply</button>
+                        </div>
+                    </div>
+                `;
+                tweetsContainer.appendChild(tweetElement);
+            });
+        }
+
+        // Extract hashtags from a tweet
+        function extractHashtags(tweetContent) {
+            const hashtagRegex = /#\w+/g;
+            return tweetContent.match(hashtagRegex) || [];
+        }
+
+        // Update trending topics based on tweets
+        function updateTrendingTopics() {
+            const hashtags = tweets.flatMap(tweet => tweet.hashtags);
+            const trending = getTrendingHashtags(hashtags);
+
+            const trendsList = document.getElementById('trends-list');
+            trendsList.innerHTML = ''; // Clear existing trends
+
+            if (trending.length === 0) {
+                const noTrends = document.createElement('li');
+                noTrends.classList.add('no-trends');
+                noTrends.textContent = 'No current trending topics today';
+                trendsList.appendChild(noTrends);
+            } else {
+                trending.forEach(trend => {
+                    const trendItem = document.createElement('li');
+                    trendItem.textContent = trend;
+                    trendsList.appendChild(trendItem);
+                });
+            }
+        }
+
+        // Get top trending hashtags
+        function getTrendingHashtags(hashtags) {
+            const count = {};
+            hashtags.forEach(hashtag => {
+                count[hashtag] = (count[hashtag] || 0) + 1;
+            });
+
+            const sortedHashtags = Object.entries(count)
+                .sort((a, b) => b[1] - a[1])
+                .map(entry => entry[0]);
+
+            return sortedHashtags.slice(0, 3); // Show top 3 trending hashtags
+        }
 
         // Check login status when the page loads
         window.onload = checkLogin;
