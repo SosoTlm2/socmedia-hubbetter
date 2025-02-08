@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocMediaHub - Twitter Style</title>
+    <style>
+        /* Modernized global styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f5f8fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: #1DA1F2;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            margin: 0;
+        }
+
+        nav li {
+            margin-left: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #0d95e8;
+        }
+
+        .sidebar {
+            width: 25%;
+            background: #e1e8ed;
+            padding: 20px;
+            border-right: 1px solid #d6d6d6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sidebar img {
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .sidebar .trends {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .sidebar .trends li {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar .trends li:hover {
+            background-color: #f5f8fa;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .tweet-box {
+            border: 1px solid #ccd6dd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        .tweet-box textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccd6dd;
+            border-radius: 8px;
+            resize: vertical;
+        }
+
+        .tweet {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #ccd6dd;
+            background-color: #fff;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .tweet img {
+            border-radius: 50%;
+            margin-right: 10px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .tweet-content {
+            flex: 1;
+        }
+
+        .tweet-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .tweet-actions button {
+            background: none;
+            border: none;
+            color: #1DA1F2;
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .tweet-actions button:hover {
+            color: #0d95e8;
+        }
+
+        /* Login form styles */
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 100px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccd6dd;
+            border-radius: 8px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            color: #fff;
+            background: #1DA1F2;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background: #0d95e8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="login-form" class="login-form">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Enter your username">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav style="display: none;" id="navbar">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#explore">Explore</a></li>
+            <li><a href="#notifications">Notifications</a></li>
+            <li><a href="#messages">Messages</a></li>
+            <li><a href="#profile">Profile</a></li>
+            <li><a href="#settings">Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" style="display: none;">
+        <div class="profile">
+            <img id="profile-pic" src="profile-pic.jpg" alt="Profile Picture">
+            <h2 id="username-display">Username</h2>
+            <p>@<span id="username-handle">username</span></p>
+        </div>
+        <ul class="trends">
+            <li>#TrendingTopic1</li>
+            <li>#TrendingTopic2</li>
+            <li>#TrendingTopic3</li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+        <div class="tweet-box" id="tweet-box" style="display: none;">
+            <textarea id="tweet-input" placeholder="What's happening?"></textarea>
+            <button id="tweet-button">Tweet</button>
+        </div>
+        <div id="tweets-container"></div>
+    </main>
+
+    <script>
+        // Check if the user is logged in by checking cookies
+        function checkLogin() {
+            const userData = getCookie('UserData');
+            if (userData) {
+                const user = JSON.parse(userData);
+                document.getElementById('navbar').style.display = 'flex';
+                document.getElementById('sidebar').style.display = 'block';
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('tweet-box').style.display = 'block';  // Show tweet box after login
+                document.getElementById('username-display').textContent = user.username;
+                document.getElementById('username-handle').textContent = user.username;
+            } else {
+                document.getElementById('login-form').style.display = 'block';
+            }
+        }
+
+        // Get cookie value
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Set cookie value
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = `expires=${d.toUTCString()}`;
+            document.cookie = `${name}=${value};${expires};path=/`;
+        }
+
+        // Login function
+        function login() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                const userData = { username };
+                setCookie('UserData', JSON.stringify(userData), 7); // Store cookie for 7 days
+                checkLogin();
+            } else {
+                alert('Please enter a username.');
+            }
+        }
+
+        // Tweet function
+        document.getElementById('tweet-button').addEventListener('click', function() {
+            const tweetInput = document.getElementById('tweet-input');
+            const tweetsContainer = document.getElementById('tweets-container');
+
+            const newTweet = document.createElement('div');
+            newTweet.className = 'tweet';
+
+            newTweet.innerHTML = `
+                <img src="user-pic.jpg" alt="User Picture">
+                <div class="tweet-content">
+                    <h3>@user</h3>
+                    <p>${tweetInput.value}</p>
+                    <div class="tweet-actions">
+                        <button>Like</button>
+                        <button>Retweet</button>
+                        <button>Reply</button>
+                    </div>
+                </div>
+            `;
+
+            tweetsContainer.prepend(newTweet);
+            tweetInput.value = '';
+        });
+
+        // Check login status when the page loads
+        window.onload = checkLogin;
+    </script>
+</body>
+</html>
