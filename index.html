@@ -130,12 +130,6 @@
 
     <main>
         <div class="container">
-            <div class="card">
-                <h2>Welcome to my portfolio!</h2>
-                <p>Everything will be updated soon, just give me some time..</p>
-            </div>
-
-            <!-- Content to search through -->
             <div class="card" data-title="Example item 1">
                 <h2>Example item 1</h2>
                 <p>This is some content related to item 1.</p>
@@ -157,15 +151,16 @@
 
     <script>
         function performSearch() {
-            const query = document.getElementById('search-query').value.toLowerCase();
-            const cards = document.querySelectorAll('.card');
-            
+            const query = document.getElementById('search-query').value.toLowerCase(); // Get the search input
+            const cards = document.querySelectorAll('.card'); // Select all cards
+
+            // Loop through each card and check if it matches the query
             cards.forEach(card => {
-                const title = card.getAttribute('data-title').toLowerCase();
+                const title = card.getAttribute('data-title').toLowerCase(); // Get title from the data-title attribute
                 if (title.includes(query)) {
-                    card.style.display = 'block';
+                    card.style.display = 'block'; // Show card if it matches the query
                 } else {
-                    card.style.display = 'none';
+                    card.style.display = 'none'; // Hide card if it doesn't match
                 }
             });
 
@@ -173,7 +168,7 @@
             if (query) {
                 window.history.pushState(null, '', `/search?query=${encodeURIComponent(query)}`);
             } else {
-                window.history.pushState(null, '', window.location.pathname);  // Reset to the homepage
+                window.history.pushState(null, '', window.location.pathname);  // Reset to the homepage if no query
             }
         }
     </script>
