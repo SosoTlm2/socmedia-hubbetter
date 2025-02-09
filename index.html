@@ -48,7 +48,7 @@
             color: #0d95e8;
         }
 
-        /* Search Bar */
+        /* Search bar style */
         .search-bar {
             display: flex;
             align-items: center;
@@ -98,6 +98,11 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .card h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
         .footer {
             background: #f5f8fa;
             padding: 20px;
@@ -109,19 +114,17 @@
 </head>
 <body>
     <nav>
-        <div>Soso's Portfolio - Just a title, idk why you readin that</div>
+        <div>Soso's Portfolio</div>
         <ul>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
         </ul>
 
         <!-- Search bar form -->
         <div class="search-bar">
-            <form action="/search" method="GET">
-                <input type="text" name="query" id="search-query" placeholder="Search..." required>
-                <button type="submit">Search</button>
-            </form>
+            <input type="text" id="search-query" placeholder="Search..." oninput="performSearch()">
+            <button onclick="performSearch()">Search</button>
         </div>
     </nav>
 
@@ -129,7 +132,21 @@
         <div class="container">
             <div class="card">
                 <h2>Welcome to my portfolio!</h2>
-                <p>Try searching "G" !</p>
+                <p>Everything will be updated soon, just give me some time..</p>
+            </div>
+
+            <!-- Content to search through -->
+            <div class="card" data-title="Example item 1">
+                <h2>Example item 1</h2>
+                <p>This is some content related to item 1.</p>
+            </div>
+            <div class="card" data-title="Test search item">
+                <h2>Test search item</h2>
+                <p>This is some content related to test search item.</p>
+            </div>
+            <div class="card" data-title="Another item">
+                <h2>Another item</h2>
+                <p>This is some content related to another item.</p>
             </div>
         </div>
     </main>
@@ -137,5 +154,29 @@
     <footer class="footer">
         © 2099 Soso Portfolio. All rights reserved.
     </footer>
+
+    <script>
+        function performSearch() {
+            const query = document.getElementById('search-query').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                if (title.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update the URL with the search query
+            if (query) {
+                window.history.pushState(null, '', `/search?query=${encodeURIComponent(query)}`);
+            } else {
+                window.history.pushState(null, '', window.location.pathname);  // Reset to the homepage
+            }
+        }
+    </script>
+    <script src="app.js"></script>
 </body>
 </html>
