@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soso's Portoflio</title>
+    <title>Soso's Portfolio</title>
     <style>
         /* Global Styles */
         body {
@@ -48,6 +48,34 @@
             color: #0d95e8;
         }
 
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: none;
+            margin-right: 10px;
+        }
+
+        .search-bar button {
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: #0d95e8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #1da1f2;
+        }
+
         main {
             flex: 1;
             padding: 20px;
@@ -70,46 +98,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .card h2 {
-            margin-top: 0;
-            font-size: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #e1e8ed;
-            border-radius: 8px;
-            background: #f9f9f9;
-        }
-
-        .form-group button {
-            background-color: #1da1f2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .form-group button:hover {
-            background-color: #0d95e8;
-        }
-
         .footer {
             background: #f5f8fa;
             padding: 20px;
@@ -117,97 +105,37 @@
             font-size: 14px;
             color: #657786;
         }
-
-        .alert {
-            padding: 10px;
-            background-color: #ff4757;
-            color: white;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        /* Profile and Settings Page */
-        .profile-container {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .profile-sidebar {
-            width: 30%;
-            background-color: #f5f8fa;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .profile-sidebar img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
-        .profile-details {
-            flex: 1;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-        }
-
-        /* Buttons */
-        .btn {
-            background-color: #1da1f2;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #0d95e8;
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
-            nav ul {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .profile-container {
-                flex-direction: column;
-            }
-
-            .profile-sidebar {
-                width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
     <nav>
-        <div>Soso's Portoflio - Just a title, idk why you readin that</div>
+        <div>Soso's Portfolio - Just a title, idk why you readin that</div>
         <ul>
             <li><a href="#"></a></li>
             <li><a href="#"></a></li>
+            <li><a href="#"></a></li>
         </ul>
+
+        <!-- Search bar form -->
+        <div class="search-bar">
+            <form action="/search" method="GET">
+                <input type="text" name="query" id="search-query" placeholder="Search..." required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
     </nav>
 
     <main>
         <div class="container">
             <div class="card">
-                <h2>Welcome to my portoflio :p !</h2>
-                <p>Everything will be updated soon, just give me sometime..</p>
+                <h2>Welcome to my portfolio!</h2>
+                <p>Everything will be updated soon, just give me some time..</p>
             </div>
         </div>
     </main>
 
     <footer class="footer">
-        © 2099 Soso Portoflio. My rights reserved.
+        © 2099 Soso Portfolio. All rights reserved.
     </footer>
 </body>
 </html>
