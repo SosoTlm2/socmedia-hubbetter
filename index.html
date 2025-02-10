@@ -7,23 +7,27 @@
     <style>
         /* Global Styles */
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
-            background-color: #e6ecf0;
+            background-color: #f9f9f9;
+            color: #333;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            color: #14171a;
         }
 
         nav {
-            background: #1da1f2;
-            color: white;
-            padding: 10px 20px;
+            background: #ffffff;
+            color: #333;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
 
         nav ul {
@@ -38,23 +42,20 @@
         }
 
         nav a {
-            color: white;
+            color: #333;
             text-decoration: none;
             font-size: 16px;
             transition: color 0.3s ease;
         }
 
         nav a:hover {
-            color: #0d95e8;
+            color: #1da1f2;
         }
-
 
         main {
             flex: 1;
-            padding: 20px;
-            background-color: #ffffff;
-            border-left: 1px solid #e1e8ed;
-            border-right: 1px solid #e1e8ed;
+            padding: 80px 20px 20px; /* Added top padding to account for fixed nav */
+            background-color: #f9f9f9;
         }
 
         .container {
@@ -69,40 +70,48 @@
             border-radius: 8px;
             margin-bottom: 15px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .card h2 {
             margin-top: 0;
             font-size: 24px;
+            color: #1da1f2;
         }
 
         .footer {
-            background: #f5f8fa;
+            background: #ffffff;
             padding: 20px;
             text-align: center;
             font-size: 14px;
             color: #657786;
+            border-top: 1px solid #e1e8ed;
         }
 
-.downloadb {
-    background: linear-gradient(135deg, #ADD8E6, #0000FF);
-    color: white;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
+        .downloadb {
+            background: linear-gradient(135deg, #1da1f2, #0d95e8);
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+        }
 
-.downloadb:hover {
-    background: linear-gradient(135deg, #0000FF, #ADD8E6);
-    transform: translateY(-2px);
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
-}
-
+        .downloadb:hover {
+            background: linear-gradient(135deg, #0d95e8, #1da1f2);
+            transform: translateY(-2px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -120,7 +129,7 @@
             <div class="card" data-title="Example item 1">
                 <h2>Download WinHance</h2>
                 <p>Download WinHance now by clicking the button below. (External Website)</p>
-                <button class="downloadb" onclick=redirectUri()>Download WinHance</button>
+                <button class="downloadb" onclick="redirectUri()">Download WinHance</button>
             </div>
             <div class="card" data-title="Test search item">
                 <h2>Test search item</h2>
@@ -134,34 +143,32 @@
     </main>
 
     <footer class="footer">
-        © 2099 Soso Portfolio. All rights reserved.
+        © 2025 Soso Portfolio. All rights reserved.
     </footer>
 
     <script>
         function performSearch() {
-            const query = document.getElementById('search-query').value.toLowerCase(); // Get the search input
-            const cards = document.querySelectorAll('.card'); // Select all cards
+            const query = document.getElementById('search-query').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
 
-            // Loop through each card and check if it matches the query
             cards.forEach(card => {
-                const title = card.getAttribute('data-title').toLowerCase(); // Get title from the data-title attribute
+                const title = card.getAttribute('data-title').toLowerCase();
                 if (title.includes(query)) {
-                    card.style.display = 'block'; // Show card if it matches the query
+                    card.style.display = 'block';
                 } else {
-                    card.style.display = 'none'; // Hide card if it doesn't match
+                    card.style.display = 'none';
                 }
             });
 
-            // Update the URL with the search query
             if (query) {
                 window.history.pushState(null, '', `/search?query=${encodeURIComponent(query)}`);
             } else {
-                window.history.pushState(null, '', window.location.pathname);  // Reset to the homepage if no query
+                window.history.pushState(null, '', window.location.pathname);
             }
         }
 
         function redirectUri() {
-            window.location.href = "https://github.com/memstechtips/Winhance"
+            window.location.href = "https://github.com/memstechtips/Winhance";
         }
     </script>
 </body>
